@@ -1,24 +1,11 @@
 class Negociacoes {
+  private _negociacoes: Negociacao[] = []
 
-  constructor(
-    private _data: Date,
-    private _qtd: number,
-    private _valor: number
-  ) { }
-
-  get data() {
-    return this._data
+  adicionar = (negociacao: Negociacao): void => {
+    this._negociacoes.push(negociacao)
   }
 
-  get qtd() {
-    return this._qtd
-  }
-
-  get valor() {
-    return this._valor
-  }
-
-  get volume() {
-    return this._qtd * this._valor
+  paraArray = (): Negociacao[] => {
+    return [...this._negociacoes]
   }
 }
