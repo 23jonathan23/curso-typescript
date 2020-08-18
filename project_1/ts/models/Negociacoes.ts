@@ -1,13 +1,16 @@
 import { Negociacao } from './Negociacao'
+import { logarTempoDeExecucao } from '../helpers/decorators/index'
 
 export class Negociacoes {
   private _negociacoes: Negociacao[] = []
 
-  adicionar = (negociacao: Negociacao): void => {
+  @logarTempoDeExecucao(true)
+  adicionar(negociacao: Negociacao): void {
     this._negociacoes.push(negociacao)
   }
 
-  paraArray = (): Negociacao[] => {
+  @logarTempoDeExecucao(true)
+  paraArray(): Negociacao[] {
     return [...this._negociacoes]
   }
 }
