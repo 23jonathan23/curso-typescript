@@ -28,6 +28,7 @@ System.register(["../views/index", "../models/index", "../helpers/decorators/ind
                     this._mensagemView = new index_1.MensagemView('#mensagemView');
                     this._negociacoesView.update(this._negociacoes);
                     this.adicionar = this.adicionar.bind(this);
+                    this.importaDados = this.importaDados.bind(this);
                 }
                 adicionar(e) {
                     e.preventDefault();
@@ -43,6 +44,26 @@ System.register(["../views/index", "../models/index", "../helpers/decorators/ind
                 }
                 _ehDiaUtil(data) {
                     return data.getDay() != DiaDaSemana.Sabado && data.getDay() != DiaDaSemana.Domingo;
+                }
+                importaDados() {
+                    function isOk(res) {
+                        if (res.ok) {
+                            return res;
+                        }
+                        else {
+                            throw new Error(res.statusText);
+                        }
+                    }
+                    fetch('http://localhost:8080/dados')
+                        .then(res => isOk(res))
+                        .then(res => res.json())
+                        .then((dados) => {
+                        dados
+                            .map(dado => new index_2.Negociacao(new Date(), dado.vezes, dado.montante))
+                            .forEach(negociacao => this._negociacoes.adicionar(negociacao));
+                        this._negociacoesView.update(this._negociacoes);
+                    })
+                        .catch(err => console.log(err));
                 }
             };
             __decorate([
