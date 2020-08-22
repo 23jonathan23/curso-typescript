@@ -1,6 +1,8 @@
 import { NegociacoesView, MensagemView } from '../views/index'
 import { Negociacoes, Negociacao } from '../models/index'
-import { domInject, meuDecoratorDeClasse } from '../helpers/decorators/index'
+import { domInject, meuDecoratorDeClasse, throttle } from '../helpers/decorators/index'
+import { NegociacaoServices } from '../services/index'
+import { imprime } from '../helpers/index'
 
 @meuDecoratorDeClasse()
 export class NegociacaoController {
@@ -16,14 +18,16 @@ export class NegociacaoController {
   private _negociacoesView = new NegociacoesView('#negociacoesView')
   private _mensagemView = new MensagemView('#mensagemView')
 
+  private _service = new NegociacaoServices()
+
   constructor() {
     this._negociacoesView.update(this._negociacoes)
     this.adicionar = this.adicionar.bind(this)
     this.importaDados = this.importaDados.bind(this)
   }
 
-  adicionar(e: Event): void {
-    e.preventDefault()
+  @throttle()
+  adicionar(): void {
 
     const data = new Date(this._inputData.val().replace(/-/g, ','))
 
@@ -37,7 +41,11 @@ export class NegociacaoController {
       parseInt(this._inputQtd.val()),
       parseFloat(this._inputValor.val())
     )
+
     this._negociacoes.adicionar(negociacao)
+
+    imprime(negociacao, this._negociacoes)
+
     this._negociacoesView.update(this._negociacoes)
     this._mensagemView.update('Negociação adicionada com sucesso!')
   }
@@ -46,7 +54,9 @@ export class NegociacaoController {
     return data.getDay() != DiaDaSemana.Sabado && data.getDay() != DiaDaSemana.Domingo
   }
 
-  importaDados() {
+  @throttle()
+  async importaDados() {
+
     function isOk(res: Response) {
       if (res.ok) {
         return res
@@ -55,17 +65,25 @@ export class NegociacaoController {
       }
     }
 
-    fetch('http://localhost:8080/dados')
-      .then(res => isOk(res))
-      .then(res => res.json())
-      .then((dados: any[]) => {
-        dados
-          .map(dado => new Negociacao(new Date(), dado.vezes, dado.montante))
-          .forEach(negociacao => this._negociacoes.adicionar(negociacao))
+    try {
+      const negociacoesParaImportar =
+        await this._service.obterNecociacoes(isOk).then((resp: Negociacao[]) => resp)
 
-        this._negociacoesView.update(this._negociacoes)
-      })
-      .catch(err => console.log(err))
+      const negociacoesJaImportar = this._negociacoes.paraArray()
+
+      negociacoesParaImportar
+        .filter(negociacao =>
+          !negociacoesJaImportar.some(jaImportada => negociacao.ehIgual(jaImportada))
+        )
+        .forEach(negociacao => this._negociacoes.adicionar(negociacao))
+
+      this._negociacoesView.update(this._negociacoes)
+
+    } catch (err) {
+      this._mensagemView.update(err.message)
+    }
+
+
   }
 }
 

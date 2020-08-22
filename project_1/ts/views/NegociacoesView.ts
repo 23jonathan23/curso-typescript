@@ -1,6 +1,6 @@
 import { View } from './View'
 import { Negociacoes } from '../models/Negociacoes'
-import { FormateDate } from '../helpers/FormateDate'
+import { formateDate } from '../helpers/index'
 
 export class NegociacoesView extends View<Negociacoes> {
 
@@ -18,7 +18,7 @@ export class NegociacoesView extends View<Negociacoes> {
   
           <tbody>
             ${model.paraArray().map(negociacao => `<tr>
-                <td>${FormateDate(negociacao.data)}</td>
+                <td>${formateDate(negociacao.data)}</td>
                 <td>${negociacao.qtd}</td>
                 <td>${negociacao.valor}</td>
                 <td>${negociacao.volume}</td>

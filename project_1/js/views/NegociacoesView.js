@@ -1,14 +1,14 @@
-System.register(["./View", "../helpers/FormateDate"], function (exports_1, context_1) {
+System.register(["./View", "../helpers/index"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var View_1, FormateDate_1, NegociacoesView;
+    var View_1, index_1, NegociacoesView;
     return {
         setters: [
             function (View_1_1) {
                 View_1 = View_1_1;
             },
-            function (FormateDate_1_1) {
-                FormateDate_1 = FormateDate_1_1;
+            function (index_1_1) {
+                index_1 = index_1_1;
             }
         ],
         execute: function () {
@@ -27,7 +27,7 @@ System.register(["./View", "../helpers/FormateDate"], function (exports_1, conte
   
           <tbody>
             ${model.paraArray().map(negociacao => `<tr>
-                <td>${FormateDate_1.FormateDate(negociacao.data)}</td>
+                <td>${index_1.formateDate(negociacao.data)}</td>
                 <td>${negociacao.qtd}</td>
                 <td>${negociacao.valor}</td>
                 <td>${negociacao.volume}</td>
